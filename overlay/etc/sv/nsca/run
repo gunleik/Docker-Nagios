@@ -4,4 +4,6 @@ if [ -f "/opt/nagios/etc/nsca.cfg" ]; then
     exec /opt/nagios/bin/nsca -f -c /opt/nagios/etc/nsca.cfg --single
 else
     echo "nsca configuration not found; skipping."
+    sv down /etc/service/nsca
+    exit 0
 fi

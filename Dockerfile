@@ -246,7 +246,8 @@ RUN mkdir -p -m 0755 /usr/share/snmp/mibs                     && \
 RUN sed -i 's,/bin/mail,/usr/bin/mail,' ${NAGIOS_HOME}/etc/objects/commands.cfg  && \
     sed -i 's,/usr/usr,/usr,'           ${NAGIOS_HOME}/etc/objects/commands.cfg
 
-RUN mkdir -p /var/spool/postfix/etc && cp /etc/services /var/spool/postfix/etc/  && \
+RUN mkdir -p /var/spool/postfix/pid /var/spool/postfix/etc && \
+    cp /etc/services /var/spool/postfix/etc/  && \
     echo "smtp_address_preference = ipv4" >> /etc/postfix/main.cf
 
 RUN rm -rf /etc/rsyslog.d /etc/rsyslog.conf
@@ -284,6 +285,7 @@ RUN chmod +x /usr/local/bin/start_nagios        && \
     chmod +x /etc/sv/nagios/run                 && \
     chmod +x /etc/sv/postfix/run                 && \
     chmod +x /etc/sv/rsyslog/run                 && \
+    chmod +x /etc/sv/nsca/run                    && \
     chmod +x /opt/nagiosgraph/etc/fix-nagiosgraph-multiple-selection.sh
 
 RUN cd /opt/nagiosgraph/etc && \
