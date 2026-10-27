@@ -43,6 +43,7 @@ RUN echo postfix postfix/main_mailer_type string "'Internet Site'" | debconf-set
         bc                                  \
         bsd-mailx                           \
         build-essential                     \
+        curl                                \
         dnsutils                            \
         fping                               \
         gettext                             \
