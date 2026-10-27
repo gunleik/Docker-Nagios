@@ -1,4 +1,5 @@
-FROM ubuntu:24.04
+ARG UBUNTU_VERSION=26.04
+FROM ubuntu:${UBUNTU_VERSION}
 MAINTAINER Jason Rivers <jason@jasonrivers.co.uk>
 
 ENV NAGIOS_HOME            /opt/nagios
@@ -17,18 +18,24 @@ ENV NG_NAGIOS_CONFIG_FILE  ${NAGIOS_HOME}/etc/nagios.cfg
 ENV NG_CGI_DIR             ${NAGIOS_HOME}/sbin
 ENV NG_WWW_DIR             ${NAGIOS_HOME}/share/nagiosgraph
 ENV NG_CGI_URL             /cgi-bin
-ENV NAGIOS_BRANCH          nagios-4.5.12
-ENV NAGIOS_PLUGINS_BRANCH  release-2.5
-ENV NRPE_BRANCH            nrpe-4.1.3
-ENV NCPA_BRANCH            v3.3.1
-ENV NSCA_BRANCH            nsca-2.10.3
-ENV NAGIOSTV_VERSION       0.9.8
+ARG NAGIOS_BRANCH=nagios-4.5.14
+ARG NAGIOS_PLUGINS_BRANCH=release-2.5
+ARG NRPE_BRANCH=nrpe-4.2.0
+ARG NCPA_BRANCH=v3.5.0
+ARG NSCA_BRANCH=nsca-2.10.3
+ARG NAGIOSTV_VERSION=0.10.0
+ENV NAGIOS_BRANCH          ${NAGIOS_BRANCH}
+ENV NAGIOS_PLUGINS_BRANCH  ${NAGIOS_PLUGINS_BRANCH}
+ENV NRPE_BRANCH            ${NRPE_BRANCH}
+ENV NCPA_BRANCH            ${NCPA_BRANCH}
+ENV NSCA_BRANCH            ${NSCA_BRANCH}
+ENV NAGIOSTV_VERSION       ${NAGIOSTV_VERSION}
 
 
 RUN echo postfix postfix/main_mailer_type string "'Internet Site'" | debconf-set-selections  && \
     echo postfix postfix/mynetworks string "127.0.0.0/8" | debconf-set-selections            && \
     echo postfix postfix/mailname string ${NAGIOS_FQDN} | debconf-set-selections             && \
-    apt-get update && apt-get install -y    \
+    apt-get update && apt-get dist-upgrade -y && apt-get install -y    \
         apache2                             \
         apache2-utils                       \
         autoconf                            \
@@ -55,14 +62,13 @@ RUN echo postfix postfix/main_mailer_type string "'Internet Site'" | debconf-set
         libdbi-perl                         \
         libdigest-hmac-perl                 \
         libfreeradius-dev                   \
-        libgdchart-gd2-xpm-dev              \
+        libgd-dev                           \
         libgd-gd2-perl                      \
         libjson-perl                        \
         libldap2-dev                        \
         libmonitoring-plugin-perl           \
         libmariadb-dev                      \
         libnagios-object-perl               \
-        libnet-snmp-perl                    \
         libnet-snmp-perl                    \
         libnet-tftp-perl                    \
         libnet-xmpp-perl                    \
@@ -92,6 +98,7 @@ RUN echo postfix postfix/main_mailer_type string "'Internet Site'" | debconf-set
         snmpd                               \
         snmp-mibs-downloader                \
         unzip                               \
+        wget                                \
                                                 && \
     apt-get clean && rm -Rf /var/lib/apt/lists/*
 
@@ -167,7 +174,7 @@ RUN cd /tmp                                                                  && 
 RUN cd /tmp                                                 && \
     git clone https://github.com/NagiosEnterprises/nsca.git && \
     cd nsca                                                 && \
-    git checkout $NSCA_TAG                                  && \
+    git checkout $NSCA_BRANCH                               && \
     ./configure                                                \
         --prefix=${NAGIOS_HOME}                                \
         --with-nsca-user=${NAGIOS_USER}                        \
@@ -239,7 +246,7 @@ RUN mkdir -p -m 0755 /usr/share/snmp/mibs                     && \
 RUN sed -i 's,/bin/mail,/usr/bin/mail,' ${NAGIOS_HOME}/etc/objects/commands.cfg  && \
     sed -i 's,/usr/usr,/usr,'           ${NAGIOS_HOME}/etc/objects/commands.cfg
 
-RUN cp /etc/services /var/spool/postfix/etc/  && \
+RUN mkdir -p /var/spool/postfix/etc && cp /etc/services /var/spool/postfix/etc/  && \
     echo "smtp_address_preference = ipv4" >> /etc/postfix/main.cf
 
 RUN rm -rf /etc/rsyslog.d /etc/rsyslog.conf

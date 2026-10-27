@@ -1,2 +1,9 @@
+.git
+.github
+.gitignore
 .travis.yml
+*.swp
+*.swo
+*~
 build.sh
+update-versions.sh

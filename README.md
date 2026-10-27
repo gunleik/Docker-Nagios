@@ -4,16 +4,16 @@ Docker image for Nagios
 
 Build Status: [![Build Status](https://travis-ci.org/JasonRivers/Docker-Nagios.svg?branch=master)](https://travis-ci.org/JasonRivers/Docker-Nagios)
 
-Nagios Core running on Ubuntu 24.04 LTS with NagiosGraph & NRPE
+Nagios Core running on Ubuntu 26.04 LTS with NagiosGraph & NRPE
 
 | Product | Version |
 | ------- | ------- |
-| Nagios Core | 4.5.12 |
+| Nagios Core | 4.5.14 |
 | Nagios Plugins | 2.5 |
-| NRPE | 4.1.3 |
-| NCPA | 3.3.1 |
+| NRPE | 4.2.0 |
+| NCPA | 3.5.0 |
 | NSCA | 2.10.3 |
-| NagiosTV | 0.9.8 |
+| NagiosTV | 0.10.0 |
 
 ### Configurations
 Nagios Configuration lives in /opt/nagios/etc
@@ -71,3 +71,20 @@ The default credentials for the web interface is `nagiosadmin` / `nagios`
 * JE-Nagios-Plugins -  custom plugins from Justin Ellison [<https://github.com/justintime/nagios-plugins>]
 * DF-Nagios-Plugins - custom pluging for MSSQL monitoring from Dan Fruehauf [<https://github.com/danfruehauf/nagios-plugins>]
 * check-mqtt - custom plugin for mqtt monitoring from Jan-Piet Mens [<https://github.com/jpmens/check-mqtt.git>]
+
+### Updating Versions & Syncing with Upstream
+
+A GitHub Actions workflow (`.github/workflows/update-and-build.yml`) automatically resolves the latest Ubuntu LTS and component release tags, builds and pushes the image to GitHub Container Registry (`ghcr.io/gunleik/docker-nagios:latest`), and commits any version updates back to `master`.
+
+To manually fetch the latest release tags (Ubuntu LTS, Nagios Core, Plugins, NRPE, NCPA, NSCA, NagiosTV) and update `Dockerfile` and `README.md`:
+
+```sh
+./update-versions.sh
+```
+
+To fetch and rebase onto `upstream/master` (`JasonRivers/Docker-Nagios`) and automatically refresh to the newest component versions:
+
+```sh
+./update-versions.sh --sync
+```
+
